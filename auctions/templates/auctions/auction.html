@@ -1,0 +1,77 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}{{ auction.title }}{% endblock %}
+
+{% block body %}
+    <h1>Auction Page</h1>
+    <hr>
+    <div>
+        <h2>Title:<a href="{% url 'auctions:auction' auction.title %}">{{ auction.title }}</a></h2>
+        {% if user.is_authenticated %}
+            {% if auction not in user.watchlist_auctions.all %}
+                <form action="{% url 'auctions:add_to_watchlist' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" value="{{ auction.title }}" name="auction_title">
+                    <input type="submit" value="Add to Watchlist">
+                </form>
+            {% else %}
+                <form action="{% url 'auctions:delete_from_watchlist' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" value="{{ auction.title }}" name="auction_title">
+                    <input type="submit" value="Delete from Watchlist">
+                </form>
+            {% endif %}
+        {% endif %}
+        <h4>Description: {{ auction.description }}</h4>
+        <h4>Starting bid: ${{ auction.starting_bid|floatformat:2 }}</h4>
+        {% if heighest_bid %}
+            <h4>Current heighest Bid: ${{ heighest_bid.value|floatformat:2 }} from "{{ heighest_bid.user.username }}"</h4>
+        {% else %}
+            <h4>No Bids have been placed yet.</h4>
+        {% endif %}
+        {% if user.is_authenticated %}
+            {% if auction.user != user %}
+                <form action="{% url 'auctions:place_bid' %}" method="post">
+                    {% csrf_token %}
+                    <input type="number" step="0.01" min="{{ min_next_bid_value }}" name="bid_value" placeholder="Place Bid: $">
+                    <input type="hidden" value="{{ auction.title }}" name="auction_title">
+                    <input type="submit" value="Place Bid">
+                </form>
+            {% endif %}
+
+            {% if auction.user == user and heighest_bid %}
+                <form action="{% url 'auctions:close_auction' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" value="{{ auction.title }}" name="auction_title">
+                    <input type="submit" value="Close Auction">
+                </form>
+            {% elif auction.user == user and not heighest_bid %}
+                <form action="{% url 'auctions:delete_auction' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" value="{{ auction.title }}" name="auction_title">
+                    <input type="submit" value="Delete Auction">
+                </form>
+            {% endif %}
+        {% endif %}
+        {% if auction.category %}
+            <h4>Category: <a href="{% url 'auctions:category_auctions' auction.category %}">{{ auction.category }}</a></h4>
+        {% endif %}
+        <img src="{{ auction.image_url }}" alt="{{ auction.title }}" style="max-width:800px; max-height:600px;">
+        <h2>Comments:</h2>
+        {% if user.is_authenticated %}
+            <hr>
+            <form action="{% url 'auctions:create_comment' %}" method="post">
+                {% csrf_token %}
+                <input type="text" placeholder="Write your comment" name="comment_content" style="width: 1000px; height: 40px">
+                <input type="hidden" value="{{ auction.title }}" name="auction_title">
+                <input type="submit" value="Add Comment">
+            </form>
+        {% endif %}
+        <hr>
+        {% for comment in comments %}
+            <h5><i>{{ comment.user.username }}</i>: "{{ comment.content }}"</h5>
+            <hr>
+        {% endfor %}
+        <h4>Auction created by <i>{{ auction.user.username }}</i></h4>
+    </div>
+{% endblock %}

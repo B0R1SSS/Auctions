@@ -1,5 +1,42 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-<h1>THIS IS INDEX OF AUCTIONS</h1>
+    <h1>Active Auctions</h1>
+    {% if message %}
+        <hr><h3>{{ message }}</h3>
+    {% endif %}
+    <hr>
+    {% for auction in auctions %}
+        <div>
+            <h2>Title: <a href="{% url 'auctions:auction' auction.title %}">{{ auction.title }}</a></h2>
+            {% if user.is_authenticated %}
+                {% if auction not in user.watchlist_auctions.all %}
+                    <form action="{% url 'auctions:add_to_watchlist' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{ auction.title }}" name="auction_title">
+                        <input type="submit" value="Add to Watchlist">
+                    </form>
+                {% else %}
+                    <form action="{% url 'auctions:delete_from_watchlist' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{ auction.title }}" name="auction_title">
+                        <input type="submit" value="Delete from Watchlist">
+                    </form>
+                {% endif %}
+            {% endif %}
+            <h4>Starting bid: ${{ auction.starting_bid|floatformat:2 }}</h4>
+            {% if auction.heighestBid %}
+                <h4>Current bid: ${{ auction.heighestBid.value|floatformat:2 }} from "{{ auction.heighestBid.user.username }}"</h4>
+            {% else %}
+                <h4>No bids placed yet.</h4>
+            {% endif %}
+            {% if auction.category %}
+                <h4>Category: <a href="{% url 'auctions:index' %}">{{ auction.category }}</a></h4>
+            {% endif %}
+            <a href="{% url 'auctions:index' %}"><img src="{{ auction.image_url }}" alt="{{ auction.title }}" style="max-width:800px; max-height:600px;"></a>
+        </div>
+        <hr>
+    {% empty %}
+        <h1>No auctions</h1>
+    {% endfor %}
 {% endblock %}

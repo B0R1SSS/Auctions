@@ -11,7 +11,7 @@ class Category(models.Model):
     name =  models.CharField(max_length=64)
 
     def __str__(self):
-        return f"Category: {self.name}"
+        return f"{self.name}"
 
 
 class Bid(models.Model):
@@ -19,13 +19,13 @@ class Bid(models.Model):
     value = models.FloatField()
 
     def __str__(self):
-        return f"Bid ${self.value} placed by {self.user} on {self.auction.get()}"
+        return f"Bid ${self.value} placed by {self.user}"
 
 
 class Auction(models.Model):
     user = models.ForeignKey(RegisteredUser, on_delete=models.CASCADE, related_name="owned_auctions", default=2)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, related_name="auctions", null=True)
-    heighestBid = models.OneToOneField(Bid, on_delete=models.SET_NULL, related_name="auction", null=True)
+    heighest_bid = models.OneToOneField(Bid, on_delete=models.SET_NULL, related_name="auction", null=True)
     watchlist = models.ManyToManyField(RegisteredUser, related_name="watchlist_auctions")
     title = models.CharField(max_length=64)
     description = models.CharField(max_length=500, blank=True)

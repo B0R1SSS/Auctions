@@ -18,17 +18,17 @@
         </div>
         <ul class="nav">
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'auctions:index' %}">Active Listings</a>
+                <a class="nav-link" href="{% url 'auctions:index' %}">Active Auctions</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'auctions:index' %}">Categories</a>
+                <a class="nav-link" href="{% url 'auctions:categories' %}">Categories</a>
             </li>
             {% if user.is_authenticated %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'auctions:index' %}">Watchlist ({{ user.watchlist_listings.all|length }})</a>
+                    <a class="nav-link" href="{% url 'auctions:watchlist' %}">Watchlist ({{ user.watchlist_auctions.all|length }})</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'auctions:index' %}">Create Listing</a>
+                    <a class="nav-link" href="{% url 'auctions:create_auction' %}">Create Auction</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'auctions:logout' %}">Log Out</a>
