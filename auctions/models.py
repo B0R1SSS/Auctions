@@ -25,7 +25,7 @@ class Bid(models.Model):
 class Auction(models.Model):
     user = models.ForeignKey(RegisteredUser, on_delete=models.CASCADE, related_name="owned_auctions", default=2)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, related_name="auctions", null=True)
-    heighestBid = models.ForeignKey(Bid, on_delete=models.SET_NULL, related_name="auction", unique=True, null=True)
+    heighestBid = models.OneToOneField(Bid, on_delete=models.SET_NULL, related_name="auction", null=True)
     watchlist = models.ManyToManyField(RegisteredUser, related_name="watchlist_auctions")
     title = models.CharField(max_length=64)
     description = models.CharField(max_length=500, blank=True)

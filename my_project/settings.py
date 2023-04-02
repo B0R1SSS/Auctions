@@ -122,3 +122,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = 'auctions.RegisteredUser'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
