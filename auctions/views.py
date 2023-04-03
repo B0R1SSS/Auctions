@@ -29,7 +29,9 @@ def register_view(request):
 
         # Attempt to create new user
         try:
-            user = RegisteredUser.objects.create_user(username, email, password)
+            user = RegisteredUser.objects.create_user(username,
+                                                      email,
+                                                      password)
             user.save()
         except IntegrityError:
             return render(request, "auctions/register.html", {
@@ -76,6 +78,7 @@ def get_category(category_name):
         category.save()
     return category
 
+
 @login_required(login_url="auctions:login")
 def create_auction_view(request):
     if request.method == "POST":
@@ -88,8 +91,15 @@ def create_auction_view(request):
         if request.POST["image_url"]:
             image_url = request.POST["image_url"]
         else:
-            image_url = "https://thumbs.dreamstime.com/b/no-image-available-icon-flat-vector-no-image-available-icon-flat-vector-illustration-132482953.jpg"
-        auction = Auction(title=title, description=description, starting_bid=starting_bid, image_url=image_url, category=category, user=user)
+            image_url = (
+                "https://thumbs.dreamstime.com/b/"
+                "no-image-available-icon-flat-vector-"
+                "no-image-available-icon-flat-vector-"
+                "illustration-132482953.jpg"
+            )
+        auction = Auction(title=title, description=description,
+                          starting_bid=starting_bid, image_url=image_url,
+                          category=category, user=user)
         auction.save()
         return HttpResponseRedirect(reverse("auctions:index"))
     return render(request, "auctions/create_auction.html")
@@ -108,8 +118,8 @@ def category_auctions_view(request, category_name):
         category = Category.objects.get(name=category_name)
         category_auctions = Auction.objects.filter(category=category)
         return render(request, "auctions/index.html", {
-        "auctions": category_auctions
-    })
+            "auctions": category_auctions
+        })
 
 
 @login_required(login_url="auctions:login")
@@ -168,7 +178,8 @@ def place_bid_view(request):
         auction.heighest_bid = new_bid
         new_bid.save()
         auction.save()
-        return HttpResponseRedirect(reverse("auctions:auction", args=(auction.title,)))
+        return HttpResponseRedirect(reverse("auctions:auction",
+                                            args=(auction.title,)))
 
 
 @login_required(login_url="auctions:login")
@@ -181,7 +192,8 @@ def close_auction_view(request):
         winner = winning_bid.user
         auction.delete()
         return render(request, "auctions/index.html", {
-            "message": f"Auction of {auction.title} was closed with winner {winner.username}",
+            "message": f"Auction {auction.title} was closed \
+                        with winner {winner.username}",
             "auctions": Auction.objects.all()
         })
 
@@ -194,7 +206,7 @@ def delete_auction_view(request):
         creator = request.user
         auction.delete()
         return render(request, "auctions/index.html", {
-            "message": f"Auction of {auction_title} was deleted with no winner",
+            "message": f"Auction {auction_title} was deleted with no winner",
             "auctions": Auction.objects.all()
         })
 
@@ -204,6 +216,8 @@ def create_comment_view(request):
     if request.method == "POST":
         auction = Auction.objects.get(title=request.POST["auction_title"])
         comment_content = request.POST["comment_content"]
-        comment = Comment(content=comment_content, auction=auction, user=request.user)
+        comment = Comment(content=comment_content,
+                          auction=auction, user=request.user)
         comment.save()
-        return HttpResponseRedirect(reverse("auctions:auction", args=(auction.title,)))
+        return HttpResponseRedirect(reverse("auctions:auction",
+                                            args=(auction.title,)))
