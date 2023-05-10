@@ -31,7 +31,7 @@
                 <h4>No bids placed yet.</h4>
             {% endif %}
             {% if auction.category %}
-                <h4>Category: <a href="{% url 'auctions:index' %}">{{ auction.category }}</a></h4>
+                <h4>Category: <a href="{% url 'auctions:category_auctions' auction.category %}">{{ auction.category }}</a></h4>
             {% endif %}
             <a href="{% url 'auctions:index' %}"><img src="{{ auction.image_url }}" alt="{{ auction.title }}" style="max-width:800px; max-height:600px;"></a>
         </div>
